@@ -27,6 +27,7 @@ from .assertions import (
 @allure.feature("Scanning File Structure")
 @allure.story("Directory scanning scenarios")
 @allure.severity(allure.severity_level.BLOCKER)
+@pytest.mark.functional
 @pytest.mark.parametrize(
     "tree_structure, recurse, expected_groups_count, scenario_name",
     [
@@ -81,6 +82,7 @@ def test_find_duplicates(
 @allure.story("File hashing verification")
 @allure.title("Hashing -> Verify chunked hashing for large files")
 @allure.severity(allure.severity_level.CRITICAL)
+@pytest.mark.functional
 def test_calculate_file_hash_large_chunked_file(tmp_path):
     with allure.step("Generating a file larger than standard 64KB"):
         test_file = tmp_path / "large_chunk.txt"
@@ -102,6 +104,7 @@ def test_calculate_file_hash_large_chunked_file(tmp_path):
 @allure.story("Handling hashing exceptions")
 @allure.title("Hashing -> Handle FS read errors")
 @allure.severity(allure.severity_level.NORMAL)
+@pytest.mark.unit
 @pytest.mark.parametrize(
     "exception_type, error_msg, scenario_name",
     [
@@ -143,6 +146,7 @@ def test_calculate_file_hash_exceptions(
 @allure.feature("Scanning File Structure")
 @allure.story("Handling FS Exceptions")
 @allure.severity(allure.severity_level.CRITICAL)
+@pytest.mark.unit
 def test_find_duplicate_files_stat_exception(create_test_tree, capsys):
     with allure.step("Creating files for stat error test"):
         structure = {"file1.txt": "hello", "file2.txt": "world"}
@@ -176,6 +180,7 @@ def test_find_duplicate_files_stat_exception(create_test_tree, capsys):
 @allure.story("Filtering Unique Entities")
 @allure.title("Scan flow -> ignore files with unique sizes")
 @allure.severity(allure.severity_level.NORMAL)
+@pytest.mark.functional
 def test_find_duplicate_files_unique_sizes(create_test_tree):
     with allure.step("Creating unique size files"):
         structure = {
@@ -195,6 +200,7 @@ def test_find_duplicate_files_unique_sizes(create_test_tree):
 @allure.story("Colorized Console Output")
 @allure.title("Logger -> Verify console print for {scenario_name}")
 @allure.severity(allure.severity_level.NORMAL)
+@pytest.mark.unit
 @pytest.mark.parametrize(
     "color_code, text_msg, expected_exception, scenario_name",
     [

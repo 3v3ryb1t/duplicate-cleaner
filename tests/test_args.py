@@ -10,6 +10,8 @@ from duplicate_cleaner import B_RED, RST, parse_args
 
 from .assertions import assert_equal, assert_equal_with_attachment
 
+pytestmark = pytest.mark.unit
+
 
 @allure.title("Successful argument parsing -> {scenario_name}")
 @allure.epic("CLI")

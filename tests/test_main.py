@@ -8,6 +8,8 @@ from duplicate_cleaner.duplicate_cleaner import main
 
 from .assertions import assert_bool_result, assert_contains, assert_equal
 
+pytestmark = pytest.mark.integration
+
 
 @allure.epic("MainApp")
 @allure.feature("App execution")

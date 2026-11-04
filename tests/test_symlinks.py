@@ -8,6 +8,8 @@ from duplicate_cleaner import flatten_symlink_chain, symlink_depth
 
 from .assertions import assert_bool_result, assert_equal, assert_exception
 
+pytestmark = pytest.mark.functional
+
 
 @allure.title("Symbolic link depth -> {scenario_name}")
 @allure.epic("Symbolic links")

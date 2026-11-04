@@ -17,7 +17,7 @@ def color_print(color: str, msg: str) -> None:
     print(f"{color}{msg}{RST}")
 
 
-def calculate_file_hash(file_path: Path) -> str:
+def calculate_file_hash(file_path: Path) -> str | None:
     hasher = hashlib.sha256()
     try:
         with open(file_path, "rb") as file:
@@ -205,7 +205,7 @@ def parse_args():
         sys.exit(-1)
 
 
-def main():
+def main() -> None:
     args = parse_args()
 
     duplicates: dict = find_duplicate_files(args.root_dir, args.recursive)

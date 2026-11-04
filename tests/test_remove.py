@@ -9,6 +9,8 @@ from duplicate_cleaner.duplicate_cleaner import remove_duplicate_files
 
 from .assertions import assert_bool_result, assert_contains
 
+pytestmark = pytest.mark.functional
+
 
 @allure.epic("Cleanup")
 @allure.feature("Files deletion")

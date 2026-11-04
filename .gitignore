@@ -16,3 +16,6 @@ htmlcov/
 # allure
 allure-results/
 allure-report/
+
+# mypy
+.mypy_cache

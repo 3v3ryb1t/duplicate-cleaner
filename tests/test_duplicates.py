@@ -9,6 +9,8 @@ from duplicate_cleaner.duplicate_cleaner import find_duplicate_files
 
 from .assertions import assert_contains, assert_equal
 
+pytestmark = pytest.mark.unit
+
 
 @allure.title("Scan exceptions -> {scenario_name}")
 @allure.epic("Duplicates search")

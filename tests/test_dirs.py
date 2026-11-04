@@ -9,6 +9,8 @@ from duplicate_cleaner import remove_empty_directories
 
 from .assertions import assert_bool_result, assert_lists_diff
 
+pytestmark = pytest.mark.functional
+
 
 @allure.title("Empty dirs removal -> {scenario_name}")
 @allure.epic("Cleanup")

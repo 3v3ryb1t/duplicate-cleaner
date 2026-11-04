@@ -1,26 +1,23 @@
 from collections.abc import Callable
-from functools import singledispatch
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import TypeVar
 
 import allure
 from allure import attachment_type
 from pytest import ExceptionInfo
 
-T = TypeVar("T", int, str)
+T = TypeVar("T")
 
 
-@singledispatch
-def assert_equal[T](actual: T, expected: T, step="Equality check"):
+def assert_equal[T: (str, int)](actual: T, expected: T, step="Equality check"):
     with allure.step(step):
-        with allure.step(f"Ожидаемый результат: {expected}"):
+        with allure.step(f"Expected result: {expected}"):
             pass
-        with allure.step(f"Фактический результат: {actual}"):
+        with allure.step(f"Actual result: {actual}"):
             pass
         assert actual == expected
 
 
-@singledispatch
 def assert_equal_with_attachment[T](
     actual: T,
     expected: T,
@@ -30,22 +27,24 @@ def assert_equal_with_attachment[T](
     with allure.step(step):
         allure.attach(
             expected,
-            name="Ожидаемый результат",
+            name="Expected result",
             attachment_type=allure.attachment_type.TEXT,
         )
 
         allure.attach(
             actual,
-            name="Фактический результат",
+            name="Actual result",
             attachment_type=allure.attachment_type.TEXT,
         )
         assert actual == expected
 
 
-def assert_lists_same[T](actual: list[T], expected: list[T], step="Lists comparison"):
+def assert_lists_same[T: (str | Path)](
+    actual: list[T], expected: list[T], step="Lists comparison"
+):
     with allure.step(step):
-        sorted_expected = sorted(expected)
-        sorted_actual = sorted(actual)
+        sorted_expected = sorted(expected, key=lambda item: str(item))
+        sorted_actual = sorted(actual, key=lambda item: str(item))
 
         expected_text = "\n".join(str(item) for item in sorted_expected)
         actual_text = "\n".join(str(item) for item in sorted_actual)
@@ -74,15 +73,17 @@ def assert_lists_diff[T](
     listA: list[T],
     listB: list[T],
     expected_diff: list[T],
-    step="List diff valiation",
+    step="List diff validation",
 ):
     with allure.step(step):
         actual_diff = list(set(listA) ^ set(listB))
 
-        expected_text = "\n".join(str(item) for item in sorted(listB))
-        actual_text = "\n".join(str(item) for item in sorted(listA))
-        expected_diff_text = "\n".join(str(item) for item in sorted(expected_diff))
-        actual_diff_text = "\n".join(str(item) for item in sorted(actual_diff))
+        expected_text = "\n".join(str(item) for item in sorted(listB, key=str))
+        actual_text = "\n".join(str(item) for item in sorted(listA, key=str))
+        expected_diff_text = "\n".join(
+            str(item) for item in sorted(expected_diff, key=str)
+        )
+        actual_diff_text = "\n".join(str(item) for item in sorted(actual_diff, key=str))
 
         allure.attach(
             expected_text,
@@ -105,62 +106,31 @@ def assert_lists_diff[T](
             attachment_type=allure.attachment_type.TEXT,
         )
 
-        assert sorted(actual_diff) == sorted(expected_diff)
+        assert sorted(actual_diff, key=str) == sorted(expected_diff, key=str)
 
 
 @allure.step("{step}")
 def assert_exception(
     actual_exception: ExceptionInfo,
     expected_exception: type[BaseException],
-    expected_msg_substring: str = None,  # noqa: RUF013
-    step="Проверка исключения",
+    expected_msg_substring: str | None,
+    step="Exception check",
 ):
     with allure.step(
-        f"Проверка типа исключения: Ожидается '{expected_exception.__name__}'"
+        f"Checking exception type: Expected '{expected_exception.__name__}'"
     ):
-        with allure.step(f"Фактический тип: '{actual_exception.type.__name__}'"):
+        with allure.step(f"Actual type: '{actual_exception.type.__name__}'"):
             pass
         assert actual_exception.type is expected_exception
 
     if expected_msg_substring:
         actual_msg = str(actual_exception.value)
-        with allure.step("Проверка сообщения об ошибке на содержание подстроки"):
-            with allure.step(f"Ожидаемый фрагмент: '{expected_msg_substring}'"):
+        with allure.step("Checking error message for substring"):
+            with allure.step(f"Expected substring: '{expected_msg_substring}'"):
                 pass
-            with allure.step(f"Фактическое сообщение: '{actual_msg}'"):
+            with allure.step(f"Actual message: '{actual_msg}'"):
                 pass
             assert expected_msg_substring in actual_msg
-
-
-def assert_function_result(
-    func: Callable[[], bool],
-    expected_result: Any,
-    *args: Any,
-    step: str = "Проверка выполнения функции",
-    **kwargs: Any,
-) -> None:
-    """
-    Выполняет переданную функцию с аргументами и проверяет её возвращаемое значение.
-
-    :param func: Ссылка на саму функцию (например, calculate_file_hash)
-    :param expected_result: Ожидаемый результат выполнения
-    :param args: Позиционные аргументы для тестируемой функции
-    :param step: Имя родительского шага в Allure
-    :param kwargs: Ключевые аргументы для тестируемой функции
-    """
-    with allure.step(step):
-        with allure.step(
-            f"Вызов функции '{func.__name__}' с аргументами: args={args}, kwargs={kwargs}"
-        ):
-            # Выполняем переданную функцию
-            actual_result = func(*args, **kwargs)
-
-        # Используем ваш существующий метод для проверки результата
-        assert_equal(
-            actual_result,
-            expected_result,
-            step=f"Валидация возвращаемого значения функции '{func.__name__}'",
-        )
 
 
 def assert_bool_result(
@@ -171,37 +141,5 @@ def assert_bool_result(
 
 
 @allure.step("{step}")
-def assert_starts_with(text: str, substr: str, step="Проверка начала строки"):
-    assert text.startswith(substr)
-
-
-@allure.step("{step}")
-def assert_ends_with(text: str, substr: str, step="Проверка конца строки"):
-    assert text.endswith(substr)
-
-
-@allure.step("{step}")
-def assert_contains(text: str, substr: str, step="Проверка подстроки"):
+def assert_contains(text: str, substr: str, step="Check substring"):
     assert substr in text
-
-
-@allure.step("{step}")
-def assert_dir_exists(path: Path, step="Проверка существования директории"):
-    with allure.step(f"Ожидается, что папка существует: {path}"):
-        pass
-    with allure.step(
-        f"Фактическое состояние: {'Существует' if path.is_dir() else 'Не найдена/Не папка'}"
-    ):
-        pass
-    assert path.is_dir()
-
-
-@allure.step("{step}")
-def assert_path_not_exists(path: Path, step="Проверка удаления пути"):
-    with allure.step(f"Ожидается, что путь удален: {path}"):
-        pass
-    with allure.step(
-        f"Фактическое состояние: {'Все еще существует' if path.exists() else 'Успешно удален (Не существует)'}"
-    ):
-        pass
-    assert not path.exists()

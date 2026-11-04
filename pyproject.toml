@@ -3,11 +3,21 @@ name = "duplicate-cleaner"
 version = "0.1.0"
 description = "Cleans specified directories from duplicates based on hash comparison"
 readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
 authors = [
     { name = "Konstantin Kovalenko", email = "konstantin.l.kovalenko@gmail.com" }
 ]
-requires-python = ">=3.12"
-dependencies = []
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+]
+[project.urls]
+Homepage = "https://github.com/despy49/duplicate-cleaner"
+Repository = "https://github.com/despy49/duplicate-cleaner"
+
 
 [project.scripts]
 duplicate-cleaner = "duplicate_cleaner.duplicate_cleaner:main"
@@ -20,6 +30,7 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
     "allure-pytest>=2.16.2",
+    "mypy>=2.4.1",
     "pytest>=9.2.0",
     "pytest-cov>=7.1.0",
 ]
@@ -30,8 +41,9 @@ minversion = "8.0"
 testpaths = ["tests"]
 disable_test_id_escaping_and_forfeit_all_rights_to_community_support = true
 markers = [
-    "unit: юнит-тесты",
-    "integration: интеграционные сценарии"
+    "unit: Isolated tests using mocks or parsing logic without disk I/O",
+    "functional: Core logic tests interacting with temporary file trees",
+    "integration: Component integration tests invoking the main execution flow"
 ]
 
 addopts = "-v --tb=short --cov --cov-report=term --cov-report=html --alluredir=allure-results"
