@@ -9,7 +9,6 @@ import pytest
 from duplicate_cleaner import B_RED, RST, parse_args
 
 from .assertions import assert_equal, assert_equal_with_attachment
-from .templates import reference_cli_meta
 
 
 @allure.title("Successful argument parsing -> {scenario_name}")
@@ -200,3 +199,39 @@ def test_parse_args_argument_error_handling():
         -1,
         "Exit Code validation",
     )
+
+
+def reference_cli_meta() -> dict[str, str]:
+    parser = argparse.ArgumentParser("Duplicate cleaner script")
+
+    parser.add_argument(
+        "-t",
+        "--target",
+        dest="root_dir",
+        type=Path,
+        default=Path.home(),
+        help="Path to target directory",
+    )
+    parser.add_argument(
+        "-r",
+        "--recurse",
+        dest="recursive",
+        action="store_true",
+        help="recursive run",
+    )
+    parser.add_argument(
+        "-nc",
+        "--no-confirm",
+        dest="no_confirm",
+        action="store_true",
+        help="apply changes without confirmation",
+    )
+    parser.add_argument(
+        "-re",
+        "--remove-empty",
+        dest="remove_empty_dirs",
+        action="store_true",
+        help="remove empty dirs",
+    )
+
+    return {"help": parser.format_help(), "usage": parser.format_usage()}
