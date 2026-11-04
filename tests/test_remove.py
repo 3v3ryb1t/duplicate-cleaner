@@ -13,10 +13,10 @@ from .assertions import assert_bool_result, assert_contains
 @allure.epic("Cleanup")
 @allure.feature("Files deletion")
 @allure.title("Deleting a duplicate - symbolic link")
-@allure.story("Collapsing symbolic links chains")
+@allure.story("Flattening symlink chain")
 @allure.severity(allure.severity_level.CRITICAL)
 def test_remove_duplicate_as_symlink(create_test_tree):
-    with allure.step("Generating original file, a duplicate and a link to it"):
+    with allure.step("Creating original file, duplicate, and symlink"):
         structure = {
             "original.txt": "data",
             "duplicate.txt": "data",
@@ -53,7 +53,7 @@ def test_remove_duplicate_as_symlink(create_test_tree):
 @allure.story("Deleting a duplicate - regular file")
 @allure.severity(allure.severity_level.CRITICAL)
 def test_remove_duplicate_physical_files(create_test_tree):
-    with allure.step("Generating regular duplicate files"):
+    with allure.step("Creating duplicate files"):
         structure = {
             "file1.txt": "same_content",
             "folder_sub": {"file2.txt": "same_content"},
@@ -83,7 +83,7 @@ def test_remove_duplicate_physical_files(create_test_tree):
 
 
 @allure.epic("Cleanup")
-@allure.feature("Files Deletion")
+@allure.feature("Files deletion")
 @allure.story("Handling Deletion Exceptions")
 @allure.title("Removal -> Handle system OSError during deletion for {scenario_name}")
 @allure.severity(allure.severity_level.CRITICAL)
@@ -111,9 +111,9 @@ def test_remove_duplicate_files_unlink_os_errors(
 ):
     test_path = create_test_tree(structure)
 
-    dynamic_duplicates = {}
+    duplicates = {}
     for file_hash, files_list in duplicates_map.items():
-        dynamic_duplicates[file_hash] = [test_path / f for f in files_list]
+        duplicates[file_hash] = [test_path / f for f in files_list]
 
     with (
         allure.step(
@@ -123,11 +123,11 @@ def test_remove_duplicate_files_unlink_os_errors(
             Path, "unlink", side_effect=OSError(errno.EACCES, "Permission denied")
         ),
     ):
-        remove_duplicate_files(dynamic_duplicates)
+        remove_duplicate_files(duplicates)
 
     captured = capsys.readouterr()
     assert_contains(
         captured.out,
         "[Error] Failed deleting",
-        "Verify system intercept warning token presence in standard output log",
+        "Check error output in stdout",
     )

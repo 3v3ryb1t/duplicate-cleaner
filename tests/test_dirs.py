@@ -63,14 +63,14 @@ from .assertions import assert_bool_result, assert_lists_diff
 def test_remove_empty_directories_scenarios(
     create_test_tree, tree_structure, expected_dirs, scenario_name
 ):
-    with allure.step("Dir structure generation"):
+    with allure.step("Creating directory structure"):
         test_path = create_test_tree(tree_structure)
 
         initial_dirs = [
             str(p.relative_to(test_path)) for p in test_path.rglob("*") if p.is_dir()
         ]
 
-    with allure.step("Call to 'remove_empty_directories()'"):
+    with allure.step("Running remove_empty_directories()"):
         remove_empty_directories(test_path)
 
     actual_remaining_dirs = [
@@ -83,7 +83,7 @@ def test_remove_empty_directories_scenarios(
         actual_remaining_dirs,
         initial_dirs,
         expected_diff,
-        "Removal results validation",
+        "Check remaining directories",
     )
 
 
@@ -93,8 +93,8 @@ def test_remove_empty_directories_scenarios(
 @allure.story("Empty directories removal")
 @allure.severity(allure.severity_level.CRITICAL)
 def test_remove_empty_directories_os_error(create_test_tree, capsys):
-    with allure.step("Protected empty directory generation"):
-        structure = {"protected_empty_dir": {}}
+    with allure.step("Creating empty directory"):
+        structure = {"empty_dir": {}}
         test_path = create_test_tree(structure)
         target_dir = test_path / "protected_empty_dir"
 
@@ -113,10 +113,10 @@ def test_remove_empty_directories_os_error(create_test_tree, capsys):
     assert_bool_result(
         target_dir.exists(),
         lambda: target_dir.exists(),
-        "Validation of directory state",
+        "Check  directory still exists",
     )
     assert_bool_result(
         True,
         lambda: expected_err in captured.out,
-        "Validation of error log",
+        "Check error output",
     )

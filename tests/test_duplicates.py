@@ -11,8 +11,8 @@ from .assertions import assert_contains, assert_equal
 
 
 @allure.title("Scan exceptions -> {scenario_name}")
-@allure.epic("Duplicates Search")
-@allure.feature("Scanning File Structure")
+@allure.epic("Duplicates search")
+@allure.feature("Scanning file structure")
 @allure.story("Handling OS errors during scan")
 @pytest.mark.parametrize(
     "error_code, scenario_name",
@@ -46,7 +46,7 @@ def test_find_duplicate_files_symlink_errors(
     )
 
 
-@allure.epic("Duplicates Search")
+@allure.epic("Duplicates search")
 @allure.feature("Hashes handling")
 @allure.story("Handling Hashing Exceptions")
 @allure.title("Scan flow -> Gracefully skip files returning empty or None hash values")
@@ -76,8 +76,8 @@ def test_find_duplicate_files_empty_hash(mock_hash: MagicMock, tmp_path: Path) -
     )
 
 
-@allure.epic("Duplicates Search")
-@allure.feature("Scanning File Structure")
+@allure.epic("Duplicates search")
+@allure.feature("Scanning file structure")
 @allure.story("Handling FS Exceptions")
 @allure.severity(allure.severity_level.NORMAL)
 @allure.title("Scan flow -> Gracefully log and ignore broken symlinks and loops")

@@ -58,12 +58,12 @@ from .assertions import assert_equal, assert_equal_with_attachment
         pytest.param(
             ["-t", "."],
             {"root_dir": Path.cwd().resolve()},
-            "relative path resolution (.)",
+            "Relative path (.)",
         ),
     ],
 )
 def test_parse_args_success(monkeypatch, cli_args, expected_flags, scenario_name):
-    with allure.step(f"Passing CLI args simulation: {cli_args}"):
+    with allure.step(f"Simulating CLI arguments: {cli_args}"):
         monkeypatch.setattr(sys, "argv", ["duplicate_cleaner.py"] + cli_args)
 
     with allure.step("Call 'parse_args()'"):
@@ -73,7 +73,7 @@ def test_parse_args_success(monkeypatch, cli_args, expected_flags, scenario_name
         assert_equal(
             getattr(args, attr),
             expected_value,
-            f"Validation of CLI arg '{attr}'",
+            f"Check CLI attribute '{attr}'",
         )
 
 
@@ -138,11 +138,11 @@ def test_parse_args_failures(
     is_custom_err,
     scenario_name,
 ):
-    with allure.step(f"Passing CLI args simulation: {cli_args}"):
+    with allure.step(f"Simulating CLI arguments: {cli_args}"):
         monkeypatch.setattr(sys, "argv", ["duplicate_cleaner.py"] + cli_args)
 
     with (
-        allure.step("Checking run cancellation via SystemExit"),
+        allure.step("Expecting SystemExit"),
         pytest.raises(SystemExit) as exc_info,
     ):
         parse_args()
@@ -150,7 +150,7 @@ def test_parse_args_failures(
     assert_equal(
         exc_info.value.code,
         expected_exit_code,
-        "Exit Code validation",
+        "Check exit code",
     )
 
     captured = capsys.readouterr()
@@ -173,18 +173,18 @@ def test_parse_args_failures(
         actual_output,
         expected_full_output,
         allure.attachment_type.TEXT,
-        "Verify error and help messages",
+        "Check error message and help output",
     )
 
 
-@allure.title("parse_args fall into except")
+@allure.title("ArgumentError handling")
 @allure.epic("CLI")
 @allure.feature("Argument parser")
 @allure.story("Run parameters parsing")
 @allure.severity(allure.severity_level.NORMAL)
 def test_parse_args_argument_error_handling():
     with (
-        allure.step("ArgumentError simulation"),
+        allure.step("Mocking ArgumentError"),
         patch.object(
             argparse.ArgumentParser,
             "parse_args",
@@ -197,7 +197,7 @@ def test_parse_args_argument_error_handling():
     assert_equal(
         exc_info.value.code,
         -1,
-        "Exit Code validation",
+        "Check exit code",
     )
 
 
@@ -217,21 +217,21 @@ def reference_cli_meta() -> dict[str, str]:
         "--recurse",
         dest="recursive",
         action="store_true",
-        help="recursive run",
+        help="Scan subdirectories recursively",
     )
     parser.add_argument(
         "-nc",
         "--no-confirm",
         dest="no_confirm",
         action="store_true",
-        help="apply changes without confirmation",
+        help="Delete duplicates without confirmation prompt",
     )
     parser.add_argument(
         "-re",
         "--remove-empty",
         dest="remove_empty_dirs",
         action="store_true",
-        help="remove empty dirs",
+        help="Remove empty directories after cleanup",
     )
 
     return {"help": parser.format_help(), "usage": parser.format_usage()}

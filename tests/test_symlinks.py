@@ -12,7 +12,8 @@ from .assertions import assert_bool_result, assert_equal, assert_exception
 @allure.title("Symbolic link depth -> {scenario_name}")
 @allure.epic("Symbolic links")
 @allure.feature("Symbolic links processing")
-@allure.story("Symbolic links depth definition")
+@allure.story("Symlink depth")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.parametrize(
     "tree_structure, link_to_check, expected_depth, scenario_name",
     [
@@ -38,21 +39,22 @@ from .assertions import assert_bool_result, assert_equal, assert_exception
 def test_symlink_depth_success(
     create_test_tree, tree_structure, link_to_check, expected_depth, scenario_name
 ):
-    with allure.step("Symbolic links generation"):
+    with allure.step("Creating symlinks"):
         test_path = create_test_tree(tree_structure)
         target_link = test_path / link_to_check
 
     assert_equal(
         symlink_depth(target_link),
         expected_depth,
-        "Link depth validation",
+        "Check link depth",
     )
 
 
 @allure.epic("Symbolic links")
 @allure.feature("Symbolic links processing")
-@allure.story("Symbolic links depth definition")
+@allure.story("Symlink depth")
 @allure.title("Symbolic links - relative path depth definition")
+@allure.severity(allure.severity_level.NORMAL)
 def test_symlink_depth_with_relative_target(tmp_path: Path) -> None:
     target_file: Path = tmp_path / "real_file.txt"
     target_file.write_text("content")
@@ -66,13 +68,14 @@ def test_symlink_depth_with_relative_target(tmp_path: Path) -> None:
     os.symlink(relative_target, link_path)
     depth: int = symlink_depth(link_path)
 
-    assert_bool_result(True, lambda x=depth: x >= 1, "Validating depth >= 1")
+    assert_bool_result(True, lambda x=depth: x >= 1, "Check depth is 1 or more")
 
 
 @allure.epic("Symbolic links")
 @allure.feature("Symbolic links processing")
 @allure.story("Flattening symbolic links chain")
-@allure.title("Collapsing multi-level symbolic link chain")
+@allure.title("Flattening symlink chain")
+@allure.severity(allure.severity_level.CRITICAL)
 def test_flatten_symlink_chain_with_multiple_links(tmp_path: Path) -> None:
     real_file: Path = tmp_path / "real.txt"
     real_file.write_text("data")
@@ -86,16 +89,16 @@ def test_flatten_symlink_chain_with_multiple_links(tmp_path: Path) -> None:
     flatten_symlink_chain(link2)
 
     assert_bool_result(
-        False, lambda: link1.exists(), "Check if intermediary link was removed"
+        False, lambda: link1.exists(), "Check if middle link was removed"
     )
 
     assert_bool_result(
         True,
         lambda: Path(os.readlink(link2)).resolve() == real_file.resolve(),
-        "Check if original link points directly to the real file target",
+        "Check if original link points to real file",
     )
     assert_bool_result(
-        True, lambda: real_file.exists(), "Verify target real file remains untouched"
+        True, lambda: real_file.exists(), "Verify real file still exists"
     )
 
 
@@ -103,7 +106,7 @@ def test_flatten_symlink_chain_with_multiple_links(tmp_path: Path) -> None:
 @allure.epic("Symbolic links")
 @allure.feature("Symbolic links processing")
 @allure.story("Links loops detection")
-@allure.severity(allure.severity_level.CRITICAL)
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.parametrize(
     "tree_structure, loop_link, scenario_name",
     [
@@ -122,7 +125,7 @@ def test_flatten_symlink_chain_with_multiple_links(tmp_path: Path) -> None:
 def test_symlink_depth_loops(
     create_test_tree, tree_structure, loop_link, scenario_name
 ):
-    with allure.step("Symbolic links loop generation"):
+    with allure.step("Creating symlink loop"):
         test_path = create_test_tree(tree_structure)
         target_link = test_path / loop_link
     with pytest.raises(RuntimeError) as exc_info:

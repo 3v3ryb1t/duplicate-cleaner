@@ -33,7 +33,7 @@ def find_duplicate_files(root_dir: Path, recurse: bool) -> dict[str, list]:
     size_groups = defaultdict(list)
     duplicates = defaultdict(list)
 
-    color_print(GREEN, "Scanning directories structures and file sizes...")
+    color_print(GREEN, "Scanning directories structures for file sizes...")
 
     search_pattern = "**/*" if recurse else "*"
     for fpath in root_dir.glob(search_pattern):
@@ -46,9 +46,9 @@ def find_duplicate_files(root_dir: Path, recurse: bool) -> dict[str, list]:
         except OSError as e:
             if os.path.islink(fpath):
                 if e.errno == errno.ENOENT:
-                    color_print(B_RED, f"[Broken Symlink] '{fpath}' points nowhere.")
+                    color_print(B_RED, f"[Broken Symlink] '{fpath}' is broken.")
                 elif e.errno == errno.ELOOP:
-                    color_print(B_RED, f"[Symlink Loop] '{fpath}' has a circular ref")
+                    color_print(B_RED, f"[Symlink Loop] '{fpath}' forms a loop")
                 else:
                     color_print(
                         B_RED, f"[OSError Symlink] Failed to access link '{fpath}': {e}"
@@ -59,7 +59,7 @@ def find_duplicate_files(root_dir: Path, recurse: bool) -> dict[str, list]:
                 )
             continue
 
-    color_print(GREEN, "Calculating potential duplicates hashes...")
+    color_print(GREEN, "Calculating file hashes...")
     for paths in size_groups.values():
         if len(paths) < 2:
             continue
@@ -160,7 +160,11 @@ def parse_args():
     )
 
     parser.add_argument(
-        "-r", "--recurse", dest="recursive", action="store_true", help="recursive run"
+        "-r",
+        "--recurse",
+        dest="recursive",
+        action="store_true",
+        help="Scan subdirectories recursively",
     )
 
     parser.add_argument(
@@ -168,7 +172,7 @@ def parse_args():
         "--no-confirm",
         dest="no_confirm",
         action="store_true",
-        help="apply changes without confirmation",
+        help="Delete duplicates without confirmation prompt",
     )
 
     parser.add_argument(
@@ -176,7 +180,7 @@ def parse_args():
         "--remove-empty",
         dest="remove_empty_dirs",
         action="store_true",
-        help="remove empty dirs",
+        help="Remove empty directories after cleanup",
     )
 
     def check_root_dir(rd: Path) -> None:
