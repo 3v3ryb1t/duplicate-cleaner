@@ -5,6 +5,7 @@ build/
 dist/
 wheels/
 *.egg-info
+.pytest_cache
 
 # Virtual environments
 .venv
@@ -17,5 +18,6 @@ htmlcov/
 allure-results/
 allure-report/
 
-# mypy
+# checkers and formatters
 .mypy_cache
+.ruff_cache
