@@ -7,7 +7,7 @@ from .assertions import assert_bool_result
 
 @allure.epic("Cleanup")
 @allure.feature("Files Deletion")
-@allure.tilte("Deleting a duplicateУдаление дубликата - symbolic link")
+@allure.title("Deleting a duplicateУдаление дубликата - symbolic link")
 @allure.story("Collapsing symbolic links chains")
 @allure.severity(allure.severity_level.CRITICAL)
 def test_remove_duplicate_as_symlink(create_test_tree):
