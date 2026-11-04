@@ -7,7 +7,7 @@ import pytest
 
 from duplicate_cleaner.duplicate_cleaner import find_duplicate_files
 
-from .assertions import assert_equal
+from .assertions import assert_contains, assert_equal
 
 
 @allure.title("Scan exceptions -> {scenario_name}")
@@ -73,4 +73,31 @@ def test_find_duplicate_files_empty_hash(mock_hash: MagicMock, tmp_path: Path) -
         len(result),
         0,
         "Verify application safely skips empty hash entries and forms zero duplicate mapping groups",
+    )
+
+
+@allure.epic("Duplicates Search")
+@allure.feature("Scanning File Structure")
+@allure.story("Handling FS Exceptions")
+@allure.severity(allure.severity_level.NORMAL)
+@allure.title("Scan flow -> Gracefully log and ignore broken symlinks and loops")
+def test_find_duplicate_files_broken_and_loop_symlinks(create_test_tree, capsys):
+    with allure.step("Generating broken link and an infinite link loop"):
+        structure = {
+            "broken_link.txt": "symlink:non_existent.txt",
+            "loop_A.txt": "symlink:loop_B.txt",
+            "loop_B.txt": "symlink:loop_A.txt",
+        }
+        test_path = create_test_tree(structure)
+
+    with allure.step("Call find_duplicate_files()"):
+        result = find_duplicate_files(test_path, recurse=False)
+
+    assert_equal(result, {}, "Validation of broken links safe ignore")
+
+    captured = capsys.readouterr()
+    assert_contains(
+        captured.out,
+        "[Broken Symlink]",
+        "Check broken links are logged via stdout",
     )
