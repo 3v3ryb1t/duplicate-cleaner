@@ -24,3 +24,37 @@ dev = [
     "pytest-cov>=7.1.0",
 ]
 
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+disable_test_id_escaping_and_forfeit_all_rights_to_community_support = true
+markers = ["unit: юнит-тесты"]
+
+addopts = "-v --tb=short --cov --cov-report=term --cov-report=html --alluredir=allure-results"
+norecursedirs = [
+    ".git",
+    ".venv",
+    "build",
+    "dist"
+]
+python_files = "test_*.py"
+python_functions = "test_*"
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+parallel = true
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+sort = "Cover"
+exclude_also = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError"
+]
+
+[tool.coverage.html]
+directory = "htmlcov" 
