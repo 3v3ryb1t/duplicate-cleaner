@@ -155,7 +155,7 @@ def parse_args():
         "--target",
         dest="root_dir",
         type=Path,
-        default=Path.home(),
+        default=Path.cwd(),
         help="Path to target directory",
     )
 

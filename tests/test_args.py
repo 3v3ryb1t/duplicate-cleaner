@@ -24,7 +24,7 @@ pytestmark = pytest.mark.unit
         pytest.param(
             [],
             {
-                "root_dir": Path.home(),
+                "root_dir": Path.cwd(),
                 "recursive": False,
                 "no_confirm": False,
                 "remove_empty_dirs": False,
@@ -211,7 +211,7 @@ def reference_cli_meta() -> dict[str, str]:
         "--target",
         dest="root_dir",
         type=Path,
-        default=Path.home(),
+        default=Path.cwd(),
         help="Path to target directory",
     )
     parser.add_argument(
