@@ -29,7 +29,10 @@ dev = [
 minversion = "8.0"
 testpaths = ["tests"]
 disable_test_id_escaping_and_forfeit_all_rights_to_community_support = true
-markers = ["unit: юнит-тесты"]
+markers = [
+    "unit: юнит-тесты",
+    "integration: интеграционные сценарии"
+]
 
 addopts = "-v --tb=short --cov --cov-report=term --cov-report=html --alluredir=allure-results"
 norecursedirs = [
