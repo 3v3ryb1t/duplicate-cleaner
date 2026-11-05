@@ -15,8 +15,8 @@ classifiers = [
     "Environment :: Console",
 ]
 [project.urls]
-Homepage = "https://github.com/despy49/duplicate-cleaner"
-Repository = "https://github.com/despy49/duplicate-cleaner"
+Homepage = "https://github.com/3v3ryb1t/duplicate-cleaner"
+Repository = "https://github.com/3v3ryb1t/duplicate-cleaner"
 
 
 [project.scripts]
